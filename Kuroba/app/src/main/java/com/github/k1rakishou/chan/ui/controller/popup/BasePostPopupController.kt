@@ -8,6 +8,7 @@ import com.github.k1rakishou.chan.core.base.RendezvousCoroutineExecutor
 import com.github.k1rakishou.chan.core.compose.AsyncData
 import com.github.k1rakishou.chan.core.helper.PostHideHelper
 import com.github.k1rakishou.chan.core.manager.ChanThreadManager
+import com.github.k1rakishou.chan.core.parser.PostViewMode
 import com.github.k1rakishou.chan.core.manager.ChanThreadViewableInfoManager
 import com.github.k1rakishou.chan.core.manager.PostFilterHighlightManager
 import com.github.k1rakishou.chan.core.manager.PostFilterManager
@@ -66,7 +67,8 @@ abstract class BasePostPopupController<T : PostPopupHelper.PostPopupData>(
       dependencies = ThreadCellStateDependenciesImpl(controllerScope),
       initialWindowSize = 32,
       controllerKey = controllerKey,
-      postDisplayOptions = postDisplayOptions
+      postDisplayOptions = postDisplayOptions,
+      postCellCallback = postCellCallback
     )
   }
 
@@ -90,106 +92,47 @@ abstract class BasePostPopupController<T : PostPopupHelper.PostPopupData>(
   }
 
   fun resetCachedPostData(postDescriptors: Collection<PostDescriptor>) {
-    // TODO: compose post cells.
+    // In Compose UI, post data calculation is refreshed on updateAllPosts / onPostsUpdated
   }
 
   fun getThumbnail(postImage: ChanPostImage): ThumbnailView? {
-//    if (!::postsView.isInitialized) {
-//      return null
-//    }
-//
-//    var thumbnail: ThumbnailView? = null
-//    for (i in 0 until postsView.childCount) {
-//      val view = postsView.getChildAt(i)
-//
-//      if (view is GenericPostCell) {
-//        val genericPostCell = view
-//        val post = genericPostCell.getPost()
-//
-//        if (post != null) {
-//          for (image in post.postImages) {
-//            if (image.equalUrl(postImage)) {
-//              thumbnail = genericPostCell.getThumbnailView(postImage)
-//            }
-//          }
-//        }
-//      }
-//    }
-//
-//    return thumbnail
-    // TODO: compose post cells.
+    // In Compose UI, thumbnails are handled by Coil ImageLoader / PostCellMediaState
     return null
   }
 
   suspend fun updateAllPosts(chanDescriptor: ChanDescriptor) {
-//    if (!::postsView.isInitialized) {
-//      return
-//    }
-//
-//    BackgroundUtils.ensureMainThread()
-//
-//    val adapter = postsView.adapter as? PostRepliesAdapter
-//      ?: return
-//
-//    if (adapter.chanDescriptor != chanDescriptor) {
-//      return
-//    }
-//
-//    val currentlyDisplayedPosts = adapter.displayedPosts()
-//    val updatedPosts = chanThreadManager.get().getPosts(currentlyDisplayedPosts)
-//    adapter.updatePosts(updatedPosts)
+    val postDescriptors = getDisplayingPostDescriptors()
+    if (postDescriptors.isEmpty()) {
+      return
+    }
 
-    // TODO: compose post cells.
+    val updatedPosts = chanThreadManager.get().getPosts(postDescriptors)
+    if (updatedPosts.isEmpty()) {
+      return
+    }
+
+    onPostsUpdated(updatedPosts)
   }
 
   suspend fun onPostsUpdated(updatedPosts: List<ChanPost>) {
-//    if (!::postsView.isInitialized) {
-//      return
-//    }
-//
-//    BackgroundUtils.ensureMainThread()
-//
-//    val adapter = postsView.adapter as? PostRepliesAdapter
-//      ?: return
-//
-//    adapter.updatePosts(updatedPosts)
-
-    // TODO: compose post cells.
+    val currentChanDescriptor = displayingData?.descriptor ?: return
+    threadState.updatePosts(
+      chanDescriptor = currentChanDescriptor,
+      posts = updatedPosts,
+      postViewMode = PostViewMode.List,
+      preloadStartPosition = 0,
+      forced = true
+    )
   }
 
   @CallSuper
   open fun displayData(chanDescriptor: ChanDescriptor, data: PostPopupHelper.PostPopupData) {
     cleanup()
     displayingAsyncDataState.value = AsyncData.Data(data as T)
-
-    // TODO: compose post cells.
-//    rendezvousCoroutineExecutor.post {
-//      val dataView = displayData(chanDescriptor, data)
-//      val repliesBack = dataView.findViewById<View>(R.id.replies_back)
-//      repliesBack.setOnClickListener { postPopupHelper.pop() }
-//
-//      val repliesClose = dataView.findViewById<View>(R.id.replies_close)
-//      repliesClose.setOnClickListener { postPopupHelper.popAll() }
-//
-//      repliesBackText = dataView.findViewById(R.id.replies_back_icon)
-//      repliesCloseText = dataView.findViewById(R.id.replies_close_icon)
-//
-//      loadView.setFadeDuration(if (first) 0 else 150)
-//      loadView.setView(dataView)
-//
-//      first = false
-//      onThemeChanged()
-//    }
   }
 
   fun scrollTo(displayPosition: Int) {
-//    if (!::postsView.isInitialized) {
-//      return
-//    }
-//
-//    postsView.smoothScrollToPosition(displayPosition)
-
-    // TODO: compose post cells.
+    // Handled by LazyListState in Compose Content()
   }
 
   override fun onOutsideOfDialogClicked() {
