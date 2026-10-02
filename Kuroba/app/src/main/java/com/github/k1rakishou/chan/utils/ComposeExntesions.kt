@@ -16,8 +16,9 @@ inline fun buildAnnotatedString(
 }
 
 fun Buffer.writeUtfString(string: String) {
-  writeLong(string.length.toLong())
-  writeString(string, StandardCharsets.UTF_8)
+  val bytes = string.toByteArray(StandardCharsets.UTF_8)
+  writeLong(bytes.size.toLong())
+  write(bytes)
 }
 
 fun Buffer.readUtfString(): String {

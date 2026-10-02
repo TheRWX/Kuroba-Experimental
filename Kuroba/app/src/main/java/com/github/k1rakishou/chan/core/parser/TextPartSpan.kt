@@ -1,6 +1,8 @@
 package com.github.k1rakishou.chan.core.parser
 
 import androidx.compose.runtime.Immutable
+import com.github.k1rakishou.chan.utils.readUtfString
+import com.github.k1rakishou.chan.utils.writeUtfString
 import com.github.k1rakishou.core_logger.Logger
 import com.github.k1rakishou.core_themes.ChanThemeColorId
 import com.github.k1rakishou.model.data.descriptor.PostDescriptor
@@ -112,19 +114,18 @@ sealed class TextPartSpan {
       override fun serializeLinkable(buffer: Buffer) {
         buffer.writeByte(if (crossThread) 1 else 0)
         buffer.writeByte(if (dead) 1 else 0)
-        // TODO: compose post cells.
-//        postDescriptor.serialize(buffer)
+        buffer.writeUtfString(postDescriptor.serializeToString())
       }
 
       companion object {
-        fun deserializeLinkable(buffer: Buffer): Quote {
-//          val crossThread = buffer.readByte() == 1.toByte()
-//          val dead = buffer.readByte() == 1.toByte()
-//          val postDescriptor = PostDescriptor.deserialize(buffer)
-//
-//          return Quote(crossThread, dead, postDescriptor)
-          // TODO: compose post cells.
-          TODO()
+        fun deserializeLinkable(buffer: Buffer): Quote? {
+          val crossThread = buffer.readByte() == 1.toByte()
+          val dead = buffer.readByte() == 1.toByte()
+          val postDescriptorStr = buffer.readUtfString()
+          val postDescriptor = PostDescriptor.deserializeFromString(postDescriptorStr)
+            ?: return null
+
+          return Quote(crossThread, dead, postDescriptor)
         }
       }
     }
@@ -134,19 +135,16 @@ sealed class TextPartSpan {
       val searchQuery: String
     ) : Linkable() {
       override fun serializeLinkable(buffer: Buffer) {
-        // TODO: compose post cells.
-//        buffer.writeUtfString(boardCode)
-//        buffer.writeUtfString(searchQuery)
+        buffer.writeUtfString(boardCode)
+        buffer.writeUtfString(searchQuery)
       }
 
       companion object {
         fun deserializeLinkable(buffer: Buffer): Search {
-//          val boardCode = buffer.readUtfString()
-//          val searchQuery = buffer.readUtfString()
-//
-//          return Search(boardCode, searchQuery)
-          // TODO: compose post cells.
-          TODO()
+          val boardCode = buffer.readUtfString()
+          val searchQuery = buffer.readUtfString()
+
+          return Search(boardCode, searchQuery)
         }
       }
     }
@@ -155,16 +153,13 @@ sealed class TextPartSpan {
       val boardCode: String
     ) : Linkable() {
       override fun serializeLinkable(buffer: Buffer) {
-        // TODO: compose post cells.
-//        buffer.writeUtfString(boardCode)
+        buffer.writeUtfString(boardCode)
       }
 
       companion object {
         fun deserializeLinkable(buffer: Buffer): Board {
-//          val boardCode = buffer.readUtfString()
-//          return Board(boardCode)
-          // TODO: compose post cells.
-          TODO()
+          val boardCode = buffer.readUtfString()
+          return Board(boardCode)
         }
       }
     }
@@ -173,16 +168,13 @@ sealed class TextPartSpan {
       val url: String
     ) : Linkable() {
       override fun serializeLinkable(buffer: Buffer) {
-        // TODO: compose post cells.
-//        buffer.writeUtfString(url)
+        buffer.writeUtfString(url)
       }
 
       companion object {
         fun deserializeLinkable(buffer: Buffer): Url {
-//          val url = buffer.readUtfString()
-//          return Url(url)
-          // TODO: compose post cells.
-          TODO()
+          val url = buffer.readUtfString()
+          return Url(url)
         }
       }
     }

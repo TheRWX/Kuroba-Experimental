@@ -14,19 +14,18 @@ class TextPartBuilderMerger {
 
     val resultTextPartBuilders: MutableList<TextPartBuilder?> = textPartBuilders.toMutableList()
 
-    val minGroupId = findMinGroupId(textPartBuilders)
-    val maxGroupId = findMaxGroupId(textPartBuilders)
+    val distinctGroupIds = textPartBuilders
+      .flatMap { it.spanGroups }
+      .map { it.groupId }
+      .filter { it >= 0 }
+      .distinct()
+      .sorted()
 
-    if (minGroupId == maxGroupId) {
-      // TODO: compose post cells. Not tested.
-      return emptyList()
+    if (distinctGroupIds.isEmpty()) {
+      return textPartBuilders
     }
 
-    if (minGroupId > maxGroupId) {
-      error("minGroupId (${minGroupId}) > maxGroupId (${maxGroupId})")
-    }
-
-    for (groupId in minGroupId..maxGroupId) {
+    for (groupId in distinctGroupIds) {
       val textPartBuilderIndexesList = findConnectableTextPartBuilderIndexes(resultTextPartBuilders, groupId)
       if (textPartBuilderIndexesList.isEmpty()) {
         continue
@@ -165,61 +164,25 @@ class TextPartBuilderMerger {
       return emptyList()
     }
 
-    val resultList = mutableListOf<MutableList<Int>>()
-    val currentList = mutableListOf<Int>()
+    val resultList = mutableListOf<List<Int>>()
+    var currentList = mutableListOf<Int>()
 
-    var index = 0
-
-    while (true) {
-      var currentValue = connectableTextPartBuilderIndexes.getOrNull(index++)
-        ?: break
-
-      var nextValue: Int? = connectableTextPartBuilderIndexes.getOrNull(index++)
-        ?: break
-
-      while (currentValue + 1 == nextValue) {
-        currentList += currentValue
-        currentValue = nextValue
-
-        nextValue = connectableTextPartBuilderIndexes.getOrNull(index++)
-        if (nextValue == null) {
-          currentList += currentValue
-          break
+    for (idx in connectableTextPartBuilderIndexes) {
+      if (currentList.isEmpty() || idx == currentList.last() + 1) {
+        currentList.add(idx)
+      } else {
+        if (currentList.size >= 2) {
+          resultList.add(currentList.toList())
         }
+        currentList = mutableListOf(idx)
       }
+    }
 
-      if (currentList.size > 1) {
-        resultList.add(currentList.toMutableList())
-      }
-
-      currentList.clear()
+    if (currentList.size >= 2) {
+      resultList.add(currentList.toList())
     }
 
     return resultList
-  }
-
-  private fun findMinGroupId(textPartBuilders: List<TextPartBuilder>): Long {
-    var minGroupId = 0L
-
-    textPartBuilders.forEach { textPartBuilder ->
-      textPartBuilder.spanGroups.forEach { textPartSpanGroup ->
-        minGroupId = minOf(minGroupId, textPartSpanGroup.groupId)
-      }
-    }
-
-    return minGroupId
-  }
-
-  private fun findMaxGroupId(textPartBuilders: List<TextPartBuilder>): Long {
-    var minGroupId = 0L
-
-    textPartBuilders.forEach { textPartBuilder ->
-      textPartBuilder.spanGroups.forEach { textPartSpanGroup ->
-        minGroupId = maxOf(minGroupId, textPartSpanGroup.groupId)
-      }
-    }
-
-    return minGroupId
   }
 
 }
