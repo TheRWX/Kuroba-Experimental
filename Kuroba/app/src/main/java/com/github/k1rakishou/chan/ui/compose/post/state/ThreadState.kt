@@ -45,6 +45,8 @@ import kotlinx.coroutines.reactive.asFlow
 import com.github.k1rakishou.chan.R
 import com.github.k1rakishou.chan.core.parser.TextPartSpan
 import com.github.k1rakishou.chan.ui.cell.PostCellInterface
+import com.github.k1rakishou.chan.ui.cell.PostCellData
+import com.github.k1rakishou.chan.ui.adapter.PostsFilter
 import com.github.k1rakishou.chan.ui.compose.toPostLinkable
 import com.github.k1rakishou.chan.utils.AppModuleAndroidUtils
 import com.github.k1rakishou.common.AndroidUtils
@@ -352,22 +354,64 @@ class ThreadState(
     val postCellState = _postCellStates.firstOrNull { it.postDescriptor == postImageThumbnailKey.postDescriptor }
     val post = postCellState?.chanPost ?: return
     val postImage = post.postImages.firstOrNull {
-      it.fullImageUri?.toString() == postImageThumbnailKey.fullImageUrl?.toString()
-        || it.thumbnailUri?.toString() == postImageThumbnailKey.thumbnailImageUrl?.toString()
+      it.imageUrl?.toString() == postImageThumbnailKey.fullImageUrl?.toString()
+        || it.actualThumbnailUrl?.toString() == postImageThumbnailKey.thumbnailImageUrl?.toString()
     } ?: post.postImages.firstOrNull() ?: return
 
-    postCellCallback?.onPostImageClicked(post, postImage)
+    val cellData = createPostCellData(postCellState, post)
+    postCellCallback?.onThumbnailClicked(cellData, postImage)
   }
 
   fun onPostImageLongClicked(postImageThumbnailKey: PostImageThumbnailKey) {
     val postCellState = _postCellStates.firstOrNull { it.postDescriptor == postImageThumbnailKey.postDescriptor }
     val post = postCellState?.chanPost ?: return
     val postImage = post.postImages.firstOrNull {
-      it.fullImageUri?.toString() == postImageThumbnailKey.fullImageUrl?.toString()
-        || it.thumbnailUri?.toString() == postImageThumbnailKey.thumbnailImageUrl?.toString()
+      it.imageUrl?.toString() == postImageThumbnailKey.fullImageUrl?.toString()
+        || it.actualThumbnailUrl?.toString() == postImageThumbnailKey.thumbnailImageUrl?.toString()
     } ?: post.postImages.firstOrNull() ?: return
 
-    postCellCallback?.onPostImageLongClicked(post, postImage)
+    val chanDescriptor = postCellCallback?.currentChanDescriptor ?: postCellState.chanDescriptorUi.chanDescriptor
+    postCellCallback?.onThumbnailLongClicked(chanDescriptor, postImage)
+  }
+
+  private fun createPostCellData(postCellState: PostCellState, post: ChanPost): PostCellData {
+    return PostCellData(
+      chanDescriptor = postCellState.chanDescriptorUi.chanDescriptor,
+      post = post,
+      postImages = post.postImages,
+      postIndex = postCellState.postIndex,
+      postCellDataWidthNoPaddings = 0,
+      textSizeSp = postCellState.fontSize,
+      detailsSizeSp = postCellState.fontSize,
+      markedPostNo = null,
+      showDivider = false,
+      boardPostViewMode = ChanSettings.BoardPostViewMode.LIST,
+      boardPostsSortOrder = PostsFilter.CatalogSortingOrder.BUMP,
+      boardPage = null,
+      neverShowPages = true,
+      tapNoReply = false,
+      postFullDate = false,
+      postFullDateLocalLocale = false,
+      shiftPostComment = false,
+      forceShiftPostComment = false,
+      postMultipleImagesCompactMode = false,
+      textOnly = false,
+      showPostFileInfo = false,
+      markUnseenPosts = false,
+      markSeenThreads = false,
+      compact = false,
+      postHideMap = emptyMap(),
+      theme = postCellState.chanTheme,
+      popupControllerType = PostCellData.PopupControllerType.Normal,
+      searchQuery = PostCellData.SearchQuery(),
+      keywordsToHighlight = emptySet(),
+      postAlignmentMode = ChanSettings.PostAlignmentMode.AlignLeft,
+      postCellThumbnailSizePercents = 100,
+      isSavedReply = false,
+      isReplyToSavedReply = false,
+      isTablet = false,
+      isSplitLayout = false
+    )
   }
 
   suspend fun onSpoilerClicked(postDescriptor: PostDescriptor, clickedSpoiler: PostCommentClickable.Spoiler) {
