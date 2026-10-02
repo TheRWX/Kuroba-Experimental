@@ -36,10 +36,10 @@ android {
         // the repo endpoint is also used to calculate the issues endpoint
         // the resources endpoint is for any static resources; currently this is mostly used for various images used internally,
         // but using a remote resource works easier with the application architecture than using a local resource/drawable
-        buildConfigField "String", "RELEASE_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/K1rakishou/Kuroba-Experimental/releases/latest\""
-        buildConfigField "String", "BETA_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/K1rakishou/Kuroba-Experimental-beta/releases/latest\""
-        buildConfigField "String", "GITHUB_ENDPOINT", "\"https://github.com/K1rakishou/Kuroba-Experimental\""
-        buildConfigField "String", "GITHUB_CHANGELOGS_ENDPOINT", "\"https://raw.githubusercontent.com/K1rakishou/Kuroba-Experimental/develop/fastlane/metadata/android/en-US/changelogs/\""
+        buildConfigField "String", "RELEASE_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/TheRWX/Kuroba-Experimental/releases/latest\""
+        buildConfigField "String", "BETA_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/TheRWX/Kuroba-Experimental-beta/releases/latest\""
+        buildConfigField "String", "GITHUB_ENDPOINT", "\"https://github.com/TheRWX/Kuroba-Experimental\""
+        buildConfigField "String", "GITHUB_CHANGELOGS_ENDPOINT", "\"https://raw.githubusercontent.com/TheRWX/Kuroba-Experimental/develop/fastlane/metadata/android/en-US/changelogs/\""
         buildConfigField "String", "GITHUB_REPORTS_ENDPOINT", "\"https://github.com/KurobaExReports/Reports/issues/\""
         // this is for checking who's built what in debug logs
         buildConfigField "String", "RELEASE_SIGNATURE", "\"86242978CF53C34361A8C962D0A57107AEB70E10631AE13EB5B006C0CF673FA9\""
@@ -87,7 +87,7 @@ android {
             // provider authority (the file provider authority should differ for different flavors
             // otherwise the app will not work)
             manifestPlaceholders = [
-                    appName              : "KurobaEx",
+                    appName              : "Vibeuroba",
                     iconLoc              : "@mipmap/ic_launcher_release",
                     fileProviderAuthority: "${defaultConfig.applicationId}${applicationIdSuffix}.fileprovider",
                     appTheme             : "@style/Chan.DefaultTheme"
@@ -105,7 +105,7 @@ android {
 
             // The same as in stable flavor
             manifestPlaceholders = [
-                    appName              : "KurobaEx-beta",
+                    appName              : "Vibeuroba-beta",
                     iconLoc              : "@mipmap/ic_launcher_beta",
                     fileProviderAuthority: "${defaultConfig.applicationId}${applicationIdSuffix}.fileprovider",
                     appTheme             : "@style/Chan.DefaultTheme"
@@ -124,7 +124,7 @@ android {
 
             // The same as in stable flavor
             manifestPlaceholders = [
-                    appName              : "KurobaEx-dev",
+                    appName              : "Vibeuroba-dev",
                     iconLoc              : "@mipmap/ic_launcher_dev",
                     fileProviderAuthority: "${defaultConfig.applicationId}${applicationIdSuffix}.fileprovider",
                     appTheme             : "@style/Chan.DebugTheme"
@@ -142,7 +142,7 @@ android {
             buildConfigField "int", "UPDATE_DELAY", "99999999"
 
             manifestPlaceholders = [
-                    appName              : "KurobaEx-fdroid",
+                    appName              : "Vibeuroba-fdroid",
                     iconLoc              : "@mipmap/ic_launcher_release",
                     fileProviderAuthority: "${defaultConfig.applicationId}${applicationIdSuffix}.fileprovider",
                     appTheme             : "@style/Chan.DefaultTheme"
@@ -162,7 +162,7 @@ android {
                     throw new GradleException("Couldn't find flavor by variant.flavorName = ${variant.flavorName}")
                 }
 
-                outputFileName = "KurobaEx${flavor.apkVersionNameSuffix}.apk"
+                outputFileName = "Vibeuroba${flavor.apkVersionNameSuffix}.apk"
             }
         }
 
