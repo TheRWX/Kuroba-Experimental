@@ -221,7 +221,8 @@ private fun DrawScope.drawSpoilerRevealAnimation(
   val pathWidth = pathBounds.width
   val pathHeight = pathBounds.height
 
-  val animationProgressPreTransformed = (SystemClock.elapsedRealtime() - startTime).toFloat() / (animationDuration).toFloat()
+  val elapsed = SystemClock.elapsedRealtime() - startTime
+  val animationProgressPreTransformed = (elapsed.toFloat() / animationDuration.toFloat()).coerceIn(0f, 1f)
   val animationProgress = FastOutLinearInEasing.transform(animationProgressPreTransformed)
 
   val circleRadius = hypot(pathWidth, pathHeight) * animationProgress
@@ -239,6 +240,5 @@ private fun DrawScope.drawSpoilerRevealAnimation(
     }
   }
 
-  // We are animating stuff so return true here
-  return true
+  return elapsed < animationDuration
 }

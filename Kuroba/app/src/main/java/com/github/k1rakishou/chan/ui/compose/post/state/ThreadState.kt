@@ -42,6 +42,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.reactive.asFlow
+import com.github.k1rakishou.chan.R
+import com.github.k1rakishou.chan.core.parser.TextPartSpan
+import com.github.k1rakishou.chan.ui.cell.PostCellInterface
+import com.github.k1rakishou.chan.ui.compose.toPostLinkable
+import com.github.k1rakishou.chan.utils.AppModuleAndroidUtils
+import com.github.k1rakishou.common.AndroidUtils
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
@@ -51,6 +57,7 @@ class ThreadState(
   val postDisplayOptions: PostDisplayOptions,
   val initialWindowSize: Int,
   val controllerKey: ControllerKey,
+  val postCellCallback: PostCellInterface.PostCellCallback? = null
 ) {
   private val coroutineScope: CoroutineScope
     get() = dependencies.coroutineScope
@@ -143,12 +150,22 @@ class ThreadState(
       ).stateIn(coroutineScope, SharingStarted.Lazily, null)
     }
 
+  private var currentSearchQuery: String? = null
+
+  fun setSearchQuery(query: String?) {
+    currentSearchQuery = query
+    _postCellStates.forEach { postCellState ->
+      postCellState.setSearchQuery(query)
+    }
+  }
+
   suspend fun updatePosts(
     chanDescriptor: ChanDescriptor,
     posts: List<ChanPost>,
     postViewMode: PostViewMode,
     preloadStartPosition: Int,
-    forced: Boolean
+    forced: Boolean,
+    replaceExisting: Boolean = false
   ) {
     // TODO: compose post cells. Reparse when chanTheme changes
     val chanTheme = themeEngine.chanTheme
@@ -158,6 +175,12 @@ class ThreadState(
     _clickedTextBackgroundColorMap.value = createClickableTextColorMap(chanTheme)
 
     withContext(NonCancellable) {
+      if (replaceExisting) {
+        _postCellStates.clear()
+        _postDescriptorToPostCellStateIndex.clear()
+        _initialWindowLoaded.value = false
+      }
+
       val toRecalculate = mutableListWithCap<PostCellState?>(posts.size)
       toRecalculate.reserve(posts.size)
       val chanPosts = mutableListWithCap<ChanPost?>(posts.size)
@@ -249,7 +272,7 @@ class ThreadState(
   ): PostCellState {
     val postDescriptorUi = PostDescriptorUi(chanPost.postDescriptor)
 
-    return PostCellState(
+    val postCellState = PostCellState(
       dependencies = PostCellStateDependenciesImpl(coroutineScope),
       postCellHighlightState = PostCellHighlightState(),
       threadState = this,
@@ -260,6 +283,8 @@ class ThreadState(
       postViewMode = postViewMode,
       fontSize = fontSize
     )
+    postCellState.setSearchQuery(currentSearchQuery)
+    return postCellState
   }
 
   private fun createClickableTextColorMap(chanTheme: ChanTheme): PersistentMap<String, Color> {
@@ -278,33 +303,71 @@ class ThreadState(
     )
   }
 
+  fun onPostLinkableClicked(postCellState: PostCellState, linkable: TextPartSpan.Linkable) {
+    val post = postCellState.chanPost
+    if (post != null) {
+      val postLinkable = linkable.toPostLinkable()
+      postCellCallback?.onPostLinkableClicked(post, postLinkable, inPopup = false)
+    }
+  }
+
   fun onCopySelectedText(selectedText: String) {
-    // TODO: compose post cells.
+    if (selectedText.isNotEmpty()) {
+      AndroidUtils.setClipboardContent("Text", selectedText)
+      AppModuleAndroidUtils.showToast(appResources.appContext, R.string.settings_logs_copied_to_clipboard)
+    }
   }
 
   fun onQuoteSelectedText(postCellState: PostCellState, withText: Boolean, selectedText: String) {
-    // TODO: compose post cells.
+    val post = postCellState.chanPost ?: return
+    val quoteText = buildString {
+      append(">>")
+      append(post.postDescriptor.postNo)
+      append("\n")
+      if (withText && selectedText.isNotBlank()) {
+        selectedText.lines().forEach { line ->
+          append(">")
+          append(line)
+          append("\n")
+        }
+      }
+    }
+    AndroidUtils.setClipboardContent("Quote", quoteText)
+    AppModuleAndroidUtils.showToast(appResources.appContext, R.string.settings_logs_copied_to_clipboard)
   }
 
   fun onTextSelectionModeChanged(postCellState: PostCellState, isInTextSelectionMode: Boolean) {
-    // TODO: compose post cells.
     _isInTextSelectionMode.value = isInTextSelectionMode
   }
 
   fun onTextAnnotationClicked(postCellState: PostCellState, text: AnnotatedString, offset: Int) {
-    // TODO: compose post cells.
+    // Annotation click handled via postTextClick & overlays
   }
 
   fun onTextAnnotationLongClicked(postCellState: PostCellState, text: AnnotatedString, offset: Int) {
-    // TODO: compose post cells.
+    // Handled via selection wrapper
   }
 
   fun onPostImageClicked(postImageThumbnailKey: PostImageThumbnailKey) {
-    // TODO: compose post cells.
+    val postCellState = _postCellStates.firstOrNull { it.postDescriptor == postImageThumbnailKey.postDescriptor }
+    val post = postCellState?.chanPost ?: return
+    val postImage = post.postImages.firstOrNull {
+      it.fullImageUri?.toString() == postImageThumbnailKey.fullImageUrl?.toString()
+        || it.thumbnailUri?.toString() == postImageThumbnailKey.thumbnailImageUrl?.toString()
+    } ?: post.postImages.firstOrNull() ?: return
+
+    postCellCallback?.onPostImageClicked(post, postImage)
   }
 
   fun onPostImageLongClicked(postImageThumbnailKey: PostImageThumbnailKey) {
-    // TODO: compose post cells.
+    val postCellState = _postCellStates.firstOrNull { it.postDescriptor == postImageThumbnailKey.postDescriptor }
+    val post = postCellState?.chanPost ?: return
+    val postImage = post.postImages.firstOrNull {
+      it.fullImageUri?.toString() == postImageThumbnailKey.fullImageUrl?.toString()
+        || it.thumbnailUri?.toString() == postImageThumbnailKey.thumbnailImageUrl?.toString()
+    } ?: post.postImages.firstOrNull() ?: return
+
+    postCellCallback?.onPostImageLongClicked(post, postImage)
   }
 
   suspend fun onSpoilerClicked(postDescriptor: PostDescriptor, clickedSpoiler: PostCommentClickable.Spoiler) {

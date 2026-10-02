@@ -75,6 +75,9 @@ internal fun PostCellCommentUi(
           threadState.onSpoilerClicked(postCellState.postDescriptor, clickedSpoiler)
         }
       },
+      onLinkClicked = { clickedLink ->
+        threadState.onPostLinkableClicked(postCellState, clickedLink)
+      },
       onTextLayout = onTextLayout
     )
   }

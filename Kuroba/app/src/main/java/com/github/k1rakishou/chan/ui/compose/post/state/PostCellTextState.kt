@@ -7,7 +7,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextLayoutResult
 import com.github.k1rakishou.chan.core.manager.RevealedTextSpoilersManager
+import com.github.k1rakishou.chan.core.parser.TextPartSpan
 import com.github.k1rakishou.chan.ui.compose.post.ui.detectClickedAnnotations
+import com.github.k1rakishou.chan.utils.extractLinkableAnnotationItem
 import com.github.k1rakishou.model.data.descriptor.PostDescriptor
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -87,13 +89,20 @@ class PostCellTextState internal constructor(
       if (clickedAnnotation != null) {
         val path = textLayoutResult.getPathForRange(clickedAnnotation.start, clickedAnnotation.end)
         if (!path.isEmpty) {
+          val linkable = clickedAnnotation.extractLinkableAnnotationItem()
           // A PostLinkable was pressed
-          _pressedPostCommentClickable += PostCommentClickable.Link(clickedAnnotation.start, clickedAnnotation.end, path)
+          _pressedPostCommentClickable += PostCommentClickable.Link(
+            start = clickedAnnotation.start,
+            end = clickedAnnotation.end,
+            path = path,
+            linkable = linkable
+          )
 
           val clickableLink = PostCommentClickable.Link(
             start = clickedAnnotation.start,
             end = clickedAnnotation.end,
-            path = path
+            path = path,
+            linkable = linkable
           )
           _postClickableLinks.value = _postClickableLinks.value.add(clickableLink)
 
@@ -101,7 +110,8 @@ class PostCellTextState internal constructor(
             start = clickedAnnotation.start,
             end = clickedAnnotation.end,
             position = position,
-            state = PostCellClickableTextEvent.State.Pressed
+            state = PostCellClickableTextEvent.State.Pressed,
+            linkable = linkable
           )
           _clickableTextEventsFlow.tryEmit(clickable)
           return true
@@ -140,14 +150,15 @@ class PostCellTextState internal constructor(
     _pressedPostCommentClickable.forEach { postCommentClickable ->
       when (postCommentClickable) {
         is PostCommentClickable.Link -> {
-          val canceledPostLinkable = PostCellClickableTextEvent.PostLinkable(
+          val postLinkableEvent = PostCellClickableTextEvent.PostLinkable(
             start = postCommentClickable.start,
             end = postCommentClickable.end,
             position = position,
-            state = state
+            state = state,
+            linkable = postCommentClickable.linkable
           )
 
-          _clickableTextEventsFlow.tryEmit(canceledPostLinkable)
+          _clickableTextEventsFlow.tryEmit(postLinkableEvent)
         }
 
         is PostCommentClickable.Spoiler -> {
@@ -221,7 +232,8 @@ sealed interface PostCellClickableTextEvent {
     override val start: Int,
     override val end: Int,
     override val position: Offset,
-    override val state: State
+    override val state: State,
+    val linkable: TextPartSpan.Linkable? = null
   ) : PostCellClickableTextEvent
 
   data class Spoiler(

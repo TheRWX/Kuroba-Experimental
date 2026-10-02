@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import com.github.k1rakishou.chan.core.parser.ProcessedPostComment
+import com.github.k1rakishou.chan.core.parser.TextPartSpan
 import com.github.k1rakishou.chan.ui.compose.KurobaTextUnit
 import com.github.k1rakishou.chan.ui.compose.components.KurobaComposeText
 import com.github.k1rakishou.chan.ui.compose.ktu
@@ -54,6 +55,7 @@ fun PostCellText(
   textAlign: TextAlign? = null,
   inlineContent: ImmutableMap<String, InlineTextContent> = persistentMapOf(),
   onSpoilerClicked: (PostCommentClickable.Spoiler) -> Unit,
+  onLinkClicked: (TextPartSpan.Linkable) -> Unit = {},
   onTextLayout: (TextLayoutResult) -> Unit
 ) {
   val chanTheme = LocalChanTheme.current
@@ -113,7 +115,8 @@ fun PostCellText(
         .fillMaxSize()
         .zIndex(Ordering.Link.zIndex),
       animationDuration = linkClickAnimationDuration,
-      postCellTextState = postCellTextState
+      postCellTextState = postCellTextState,
+      onLinkClicked = onLinkClicked
     )
 
     PostCellSpoilersOverlay(

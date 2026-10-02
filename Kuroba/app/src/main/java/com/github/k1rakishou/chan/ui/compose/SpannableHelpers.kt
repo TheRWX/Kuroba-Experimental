@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.core.text.getSpans
+import com.github.k1rakishou.chan.core.parser.TextPartSpan
 import com.github.k1rakishou.core_logger.Logger
 import com.github.k1rakishou.core_spannable.BackgroundColorIdSpan
 import com.github.k1rakishou.core_spannable.ForegroundColorIdSpan
@@ -20,6 +21,7 @@ import com.github.k1rakishou.core_spannable.PostLinkable
 import com.github.k1rakishou.core_themes.ChanTheme
 import com.github.k1rakishou.core_themes.ChanThemeColorId
 import com.github.k1rakishou.core_themes.ThemeEngine
+import com.github.k1rakishou.model.data.descriptor.ChanDescriptor
 
 private const val TAG = "SpannableHelpers"
 
@@ -137,4 +139,58 @@ private fun getColorByColorId(
   }
 
   return Color(color)
+}
+
+fun TextPartSpan.Linkable.toPostLinkable(): PostLinkable {
+  return when (this) {
+    is TextPartSpan.Linkable.Quote -> {
+      if (dead) {
+        PostLinkable(
+          key = postDescriptor.postNo.toString(),
+          linkableValue = PostLinkable.Value.LongValue(postDescriptor.postNo),
+          type = PostLinkable.Type.DEAD
+        )
+      } else if (crossThread) {
+        val threadDescriptor = postDescriptor.descriptor as? ChanDescriptor.ThreadDescriptor
+        val threadNo = threadDescriptor?.threadNo ?: postDescriptor.postNo
+        PostLinkable(
+          key = postDescriptor.postNo.toString(),
+          linkableValue = PostLinkable.Value.ThreadOrPostLink(
+            board = postDescriptor.descriptor.boardCode(),
+            threadId = threadNo,
+            postId = postDescriptor.postNo,
+            postSubId = postDescriptor.postSubNo
+          ),
+          type = PostLinkable.Type.THREAD
+        )
+      } else {
+        PostLinkable(
+          key = postDescriptor.postNo.toString(),
+          linkableValue = PostLinkable.Value.LongValue(postDescriptor.postNo),
+          type = PostLinkable.Type.QUOTE
+        )
+      }
+    }
+    is TextPartSpan.Linkable.Url -> {
+      PostLinkable(
+        key = url,
+        linkableValue = PostLinkable.Value.StringValue(url),
+        type = PostLinkable.Type.LINK
+      )
+    }
+    is TextPartSpan.Linkable.Board -> {
+      PostLinkable(
+        key = boardCode,
+        linkableValue = PostLinkable.Value.StringValue(boardCode),
+        type = PostLinkable.Type.BOARD
+      )
+    }
+    is TextPartSpan.Linkable.Search -> {
+      PostLinkable(
+        key = searchQuery,
+        linkableValue = PostLinkable.Value.SearchLink(board = boardCode, query = searchQuery),
+        type = PostLinkable.Type.SEARCH
+      )
+    }
+  }
 }

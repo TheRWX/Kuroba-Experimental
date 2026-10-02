@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.clipPath
+import com.github.k1rakishou.chan.core.parser.TextPartSpan
 import com.github.k1rakishou.chan.core.parser.usecase.PostCommentApplier
 import com.github.k1rakishou.chan.ui.compose.post.state.PostCellClickableTextEvent
 import com.github.k1rakishou.chan.ui.compose.post.state.PostCellTextState
@@ -39,7 +40,8 @@ private data class LinksAnimationData(
 internal fun PostCellLinksOverlay(
   modifier: Modifier,
   animationDuration: Int,
-  postCellTextState: PostCellTextState
+  postCellTextState: PostCellTextState,
+  onLinkClicked: (TextPartSpan.Linkable) -> Unit = {}
 ) {
   val animations = remember { mutableStateListOf<LinksAnimationData>() }
 
@@ -94,6 +96,11 @@ internal fun PostCellLinksOverlay(
             postCellTextState.onCanceledConfirmed()
           }
           PostCellClickableTextEvent.State.Clicked -> {
+            val linkable = postLinkable.linkable ?: clickedLinkInfo.linkable
+            if (linkable != null) {
+              onLinkClicked(linkable)
+            }
+
             delay(animationDuration.toLong())
 
             val animationIndex = getAnimationIndex()
@@ -113,6 +120,8 @@ internal fun PostCellLinksOverlay(
   Canvas(
     modifier = modifier,
     onDraw = {
+      var needInvalidation = false
+
       for (animation in animations) {
         val startTime = animation.startTime
         if (startTime == null) {
@@ -129,7 +138,8 @@ internal fun PostCellLinksOverlay(
         val pathWidth = pathBounds.width
         val pathHeight = pathBounds.height
 
-        val animationProgressPreTransformed = (SystemClock.elapsedRealtime() - startTime).toFloat() / animationDuration.toFloat()
+        val elapsed = SystemClock.elapsedRealtime() - startTime
+        val animationProgressPreTransformed = (elapsed.toFloat() / animationDuration.toFloat()).coerceIn(0f, 1f)
         val animationProgress = FastOutLinearInEasing.transform(animationProgressPreTransformed)
 
         val circleRadius = hypot(pathWidth, pathHeight) * animationProgress
@@ -148,7 +158,12 @@ internal fun PostCellLinksOverlay(
           }
         }
 
-        // TODO: compose post cells. Find a better solution.
+        if (elapsed < animationDuration) {
+          needInvalidation = true
+        }
+      }
+
+      if (needInvalidation) {
         recomposeScope.invalidate()
       }
     }

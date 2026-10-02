@@ -3,6 +3,8 @@ package com.github.k1rakishou.chan.ui.compose.post.state
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Path
 
+import com.github.k1rakishou.chan.core.parser.TextPartSpan
+
 @Immutable
 sealed interface PostCommentClickable {
   fun intersectsWith(textOffset: Int): Boolean
@@ -21,10 +23,11 @@ sealed interface PostCommentClickable {
   data class Link(
     val start: Int,
     val end: Int,
-    val path: Path
+    val path: Path,
+    val linkable: TextPartSpan.Linkable? = null
   ) : PostCommentClickable {
     override fun intersectsWith(textOffset: Int): Boolean {
-      return start >= textOffset && textOffset <= end
+      return textOffset in start..end
     }
   }
 

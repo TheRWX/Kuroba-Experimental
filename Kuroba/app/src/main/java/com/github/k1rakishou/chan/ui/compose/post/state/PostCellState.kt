@@ -62,9 +62,17 @@ data class PostCellState(
   val initialized: State<Boolean>
     get() = _initialized
 
+  private val _chanPost = mutableStateOf<ChanPost?>(null)
+  val chanPost: ChanPost?
+    get() = _chanPost.value
+
   private val _searchQuery = mutableStateOf<String?>(null)
   val searchQuery: State<String?>
     get() = _searchQuery
+
+  fun setSearchQuery(query: String?) {
+    _searchQuery.value = query
+  }
 
   private val _postTitle = mutableStateOf<AnnotatedString?>(null)
   val postTitle: State<AnnotatedString?>
@@ -145,6 +153,7 @@ data class PostCellState(
     postCellHighlightState.onPostCalculationFinished(chanPost)
 
     Snapshot.withMutableSnapshot {
+      _chanPost.value = chanPost
       _parsedPostDataRaw.value = parsedPostDataRaw
       _postTitle.value = postTitle
       _postComment.value = postComment

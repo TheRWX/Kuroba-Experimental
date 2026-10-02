@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.Density
 import com.github.k1rakishou.chan.R
 
 class AppResources(
-  private val appContext: Context
+  val appContext: Context
 ) {
   val composeDensity by lazy(LazyThreadSafetyMode.NONE) { Density(appContext) }
 
