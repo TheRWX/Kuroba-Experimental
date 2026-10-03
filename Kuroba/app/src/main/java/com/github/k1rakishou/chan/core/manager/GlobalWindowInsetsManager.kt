@@ -70,7 +70,9 @@ class GlobalWindowInsetsManager {
 
     val applyWindowInsetsListener = OnApplyWindowInsetsListener { _, insets ->
       val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-      val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+      val systemBarInsets = insets.getInsets(
+        WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+      )
 
       val isGestureNavigationEnabledNow = if (AndroidUtils.isAndroid10()) {
         val gestureInsets = insets.getInsets(WindowInsetsCompat.Type.systemGestures())

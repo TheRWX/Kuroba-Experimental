@@ -4,9 +4,11 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.github.k1rakishou.chan.R
 import com.github.k1rakishou.chan.core.di.module.activity.ActivityScopedViewModelFactory
@@ -86,9 +88,25 @@ abstract class ControllerHostActivity :
     }
   }
 
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+      override fun handleOnBackPressed() {
+        if (!stack.isEmpty() && stack.peek().onBack()) {
+          return
+        }
+
+        isEnabled = false
+        onBackPressedDispatcher.onBackPressed()
+        isEnabled = true
+      }
+    })
+  }
+
   @Deprecated("Deprecated in Java")
   override fun onBackPressed() {
-    if (stack.peek().onBack()) {
+    if (!stack.isEmpty() && stack.peek().onBack()) {
       return
     }
 

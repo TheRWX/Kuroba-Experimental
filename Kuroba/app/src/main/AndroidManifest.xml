@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <application
         android:name="com.github.k1rakishou.chan.Chan"
         android:allowBackup="true"
+        android:enableOnBackInvokedCallback="true"
         android:icon="${iconLoc}"
         android:label="${appName}"
         android:requestLegacyExternalStorage="true"
