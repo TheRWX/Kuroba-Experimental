@@ -1,60 +1,109 @@
+# Vibeuroba
 
-# Kuroba Experimental
+**An Android imageboard browser maintained by [TheRWX](https://github.com/TheRWX).**
 
-<p align="left"><a href="https://f-droid.org/packages/com.github.k1rakishou.chan.fdroid/"><img src="https://f-droid.org/assets/fdroid-logo-text.svg" width="250"></a></p> 
+Vibeuroba brings browsing, posting, bookmarks, and media downloads into one app.
+Read boards and threads, follow conversations, view images and videos, and save
+threads for later. It is a continuation of
+[Kuroba Experimental](https://github.com/K1rakishou/Kuroba-Experimental), which is
+itself a fork of [Kuroba](https://github.com/Adamantcheese/Kuroba).
 
-[Latest beta version](https://github.com/K1rakishou/Kuroba-Experimental-beta/releases/latest)
+This fork starts its own public version series at **1.0**. The repository keeps
+its original `Kuroba-Experimental` name to preserve its history and attribution.
 
-[All beta versions](https://github.com/K1rakishou/Kuroba-Experimental-beta/releases)
+## What the app does
 
-### [Latest release version (v1.3.33)](https://github.com/K1rakishou/Kuroba-Experimental/releases/tag/v1.3.33-release)
+- **Browse and search:** open boards and threads in tabs, search supported sites,
+  and combine multiple boards into a single catalog.
+- **Follow conversations:** bookmark threads, organize bookmarks into groups,
+  and receive thread update notifications.
+- **Post replies:** attach media from your device, shared files, or a URL;
+  queue replies with the background posting service.
+- **View media:** open images, GIFs, and videos in a dedicated viewer. Optional
+  mpv playback requires a separate download.
+- **Save content:** download media in the background and export downloaded
+  threads as HTML with their media files.
+- **Customize your experience:** use dynamic light and dark themes, content
+  filters, and per-site proxy settings.
+- **Read archives:** access supported third-party thread archives.
 
+The inherited site integrations include 4chan, Dvach, 8kun, Lainchan, Endchan,
+and others. Available features depend on each site's API, permissions, and
+availability; inclusion in the source does not guarantee that a service is
+currently accessible.
 
-KurobaEx is a fast Android app for browsing imageboards, such as 4chan and 8chan. It's a fork of Kuroba. This fork provides lots of new features:
+## The 1.0 starting point
 
-- New technological stack (Kotlin, RxJava/Coroutines, Room etc).
+TheRWX is developing Vibeuroba as an independent continuation, with more
+features to follow. The `vibeuroba-1.0` branch builds on the existing
+`KurobaEx_2.0.0` development work, including the Vibeuroba branding and ongoing
+Jetpack Compose interface work.
 
-- On demand content loading (includes prefetching, youtube videos titles and durations fetching, inlined files size fetching etc).
+This first pass establishes the name, version, and project documentation.
+The capabilities above come from the existing codebase; they are not a claim
+that every feature has been newly implemented or tested for 1.0.
 
-- Third-party archives support.
+Before publishing a 1.0 APK, the remaining release work is to:
 
-- New thread navigation (tabs).
+- Verify the Android build and exercise browsing, posting, media, and downloads
+  on a device.
+- Adapt the inherited updater and release scripts to Vibeuroba's version series
+  and release destinations.
+- Confirm release signing and the upgrade path from previously installed builds.
 
-- New in-app navigation (bottom nav bar).
+## Download and installation
 
-- New bookmarks (they were fully rewritten from scratch, now use way less memory, don't use wakelocks, show separate notifications per thread (and notifications can be swiped away).
+Published APKs are listed on this fork's
+[Releases page](https://github.com/TheRWX/Kuroba-Experimental/releases).
+**Setting this branch to 1.0 does not publish a 1.0 APK.** Check the release title
+and attached assets before installing. The upstream project's APKs and F-Droid
+listing are separate distributions.
 
-- Edge-to-edge theme support.
+The app targets devices running Android 5.0 (API 21) or newer. Its existing
+Android application ID is retained. Installing over a previous build requires
+a compatible signing key; the displayed version alone does not establish
+upgrade compatibility.
 
-- New database.
+## Build from source
 
-- 4chan global search support.
+The Android project lives in [`Kuroba/`](Kuroba/). Its configured toolchain uses
+JDK 17, Android SDK 34, and the included Gradle wrapper. Dependencies are fetched
+from Google Maven, Maven Central, and JitPack.
 
-- Fully dynamic themes with Android Q Day/Night mode support.
+```sh
+git clone --branch vibeuroba-1.0 https://github.com/TheRWX/Kuroba-Experimental.git
+cd Kuroba-Experimental/Kuroba
+```
 
-- Per-site proxies.
+Set your SDK location in an untracked `local.properties` file:
 
-- Ability to attach multiple media files to reply, attach media files that was shared by external apps (even by some keyboards), attach remote media files by URL, etc.
+```properties
+sdk.dir=/absolute/path/to/your/android-sdk
+```
 
-- New image downloader. Allows downloading images while the app is in background, retrying failed to download images, resolving duplicates, etc. 
+Build the development APK:
 
-- New posting. Posting code was moved into a foreground service which now allows stuff like using automatic captcha solvers (2captcha API) seamlessly or queueing multiple replies in different threads (only one reply per thread).
+```sh
+./gradlew :app:assembleDevDebug
+```
 
-- New Media Viewer. It was rewritten from scratch and now lives in a separate activity. It now also supports stuff like viewing links to media files shared into the app.
+The expected output is `app/build/outputs/apk/dev/debug/Vibeuroba-dev.apk`.
+The `dev` flavor has a separate application ID suffix so it can coexist with
+the stable flavor. Release builds need your own signing configuration.
 
-- Thread downloader with ability to export threads as HTML pages with all downloaded media.
+The public version is `1.0`. Android's internal `versionCode` is `10336`, one
+higher than the previous build, so the public version reset does not lower
+Android's install ordering. Keep incrementing that internal code for future
+releases. The inherited updater still derives version codes from upstream-style
+tags, so it must be adapted before publishing releases in the new series.
 
-- Composite catalogs (ability to combine multiple boards of any available sites (except archives) together into a single catalog).
+## Screenshots
 
-- Mpv video player (downloadable).
+These screenshots are inherited from Kuroba Experimental and illustrate the
+existing app; they are not verified screenshots of the Vibeuroba 1.0 build.
 
-- Bookmark groups with ability to setup regex matchers to automatically move newly created bookmarks into them.
-
-- Automatic captcha solver for 4chan captcha (See https://github.com/K1rakishou/4chanCaptchaSolver)
-
-- Lots of other tiny improvements.
-
-### Screenshots:
+<details>
+<summary>View the inherited screenshot gallery</summary>
 
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
@@ -83,32 +132,20 @@ KurobaEx is a fast Android app for browsing imageboards, such as 4chan and 8chan
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/25.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/25.png)
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/26.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/26.png)
 
-##### Currently supported sites
-- 4Chan
-- Dvach
-- 8Kun (thanks to @jirn073-76)
-- 420Chan (thanks to @Lolzen)
-- Lainchan
-- Sushichan
-- Wired-7 (thanks to @Wired-7)
-- 370chan.info (thanks to @alcharkov)
-- Endchan
-- Kohlchan
-- Vhschan (thanks to @MrPurple666)
-- YesHoney (thanks to @SomeGuy719)
+</details>
 
-##### Currently supported 4chan archives
-- ArchivedMoe
-- ArchiveOfSins
-- B4k
-- DesuArchive
-- Fireden 
-- 4Plebs 
-- Nyafuu 
-- TokyoChronos
-- Warosu
-- Wakarimasen.moe
-- RozenArcana
+## Feedback and contributions
 
-## License
-[Kuroba is GPLv3](https://github.com/K1rakishou/Kuroba-Experimental/blob/develop/COPYING.txt), [licenses of the used libraries.](https://github.com/K1rakishou/Kuroba-Experimental/blob/develop/Kuroba/app/src/main/assets/html/licenses.html)
+Use this fork's [issue tracker](https://github.com/TheRWX/Kuroba-Experimental/issues)
+for Vibeuroba feedback. Include the app version, Android version, affected site,
+and steps to reproduce a problem. Discuss larger features before implementing
+them so they fit the direction of this fork.
+
+## Credits and license
+
+Vibeuroba builds on the work of K1rakishou, the Kuroba Experimental contributors,
+and the original Kuroba contributors. Existing copyright notices and attribution
+remain in the source.
+
+Licensed under [GNU GPL v3](COPYING.txt). See also the
+[third-party library licenses](Kuroba/app/src/main/assets/html/license.html).

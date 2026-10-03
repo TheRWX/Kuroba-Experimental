@@ -1,1 +1,1 @@
-Free and open source image board browser
+An Android imageboard browser for threads, replies, bookmarks, and media.

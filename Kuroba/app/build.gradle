@@ -47,12 +47,11 @@ android {
         buildConfigField "String", "DEBUG_SIGNATURE", "\"DC5195CC40E42B95267D500B6E93E46EC51028C67BDD3D09BBB9C208BF20C8FE\""
         buildConfigField "String", "COMMIT_HASH", "\"" + getCommitHash() + "\""
 
-        //          M -> Major version
-        //          m -> Minor version
-        //          p -> patch
-        //          MmmPP
-        versionCode 10335
-        versionName "v1.3.35"
+        // Vibeuroba starts its own public version series at 1.0.
+        // Keep Android's install version increasing from the previous build (10335).
+        // This code is independent of the public version name; increment it for each release.
+        versionCode 10336
+        versionName "1.0"
 
         applicationVariants.all { variant ->
             variant.outputs.all {

@@ -1,24 +1,16 @@
-KurobaEx is a fast Android app for browsing imageboards, such as 4chan. It's a fork of Kuroba. This fork provides lots of new features:
+Vibeuroba is a free and open source Android imageboard browser maintained by TheRWX. It continues Kuroba Experimental, itself a fork of Kuroba, with its own public version series starting at 1.0.
 
-* New technological stack (Kotlin, RxJava/Coroutines, Room etc).
-* On demand content loading (includes prefetching, youtube videos titles and durations fetching, inlined files size fetching etc).
-* Third-party archives support.
-* New thread navigation (tabs).
-* New in-app navigation (bottom nav bar).
-* New bookmarks (they were fully rewritten from scratch, now use way less memory, don't use wakelocks, show separate notifications per thread (and notifications can be swiped away).
-* Edge-to-edge theme support.
-* New database.
-* 4chan global search support.
-* Fully dynamic themes with Android Q Day/Night mode support.
-* Per-site proxies.
-* Ability to attach multiple media files to reply, attach media files that was shared by external apps (event by some keyboards), attach remote media files by URL, etc.
-* New image downloader. Allows downloading images while the app is in background, retrying failed to download images, resolving duplicates, etc. 
-* New posting. Posting code was moved into a foreground service which now allows stuff using like automatic captcha solvers (2captcha API) seamlessly or queueing multiple replies in different threads (only one reply per thread).
-* New Media Viewer. It was rewritten from scratch and now lives in a separate activity. It now also supports stuff like viewing links to media files shared into the app.
-* Thread downloader with ability to export threads as HTML pages with all downloaded media.
-* Composite catalogs (ability to combine multiple boards of any available sites (except archives) together into a single catalog).
-* Mpv video player.
-* Lots of other tiny improvements.
+Browse boards and threads, follow conversations, post replies, view media, and save content for later.
+
+* Tabbed board and thread browsing, search on supported sites, and composite catalogs.
+* Thread bookmarks, bookmark groups, and update notifications.
+* Replies with media attachments and background posting queues.
+* A dedicated image and video viewer, with optional downloadable mpv playback.
+* Background media downloads and HTML exports of downloaded threads.
+* Dynamic light and dark themes, content filters, and per-site proxies.
+* Supported third-party thread archives.
+
+Site availability and supported features vary. These capabilities are inherited from the existing codebase; Vibeuroba development continues in TheRWX/Kuroba-Experimental.
 
 AntiFeatures:
 - NonFreeNet. The app has to connect to image board sites which may be closed source. 
