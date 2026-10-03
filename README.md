@@ -8,8 +8,8 @@ threads for later. It is a continuation of
 [Kuroba Experimental](https://github.com/K1rakishou/Kuroba-Experimental), which is
 itself a fork of [Kuroba](https://github.com/Adamantcheese/Kuroba).
 
-This fork starts its own public version series at **1.0**. The repository keeps
-its original `Kuroba-Experimental` name to preserve its history and attribution.
+This fork starts its own public version series at **1.0**, under the
+**Vibeuroba** project name. Its Git history and upstream attribution are preserved.
 
 ## What the app does
 
@@ -54,7 +54,7 @@ Before publishing a 1.0 APK, the remaining release work is to:
 ## Download and installation
 
 Published APKs are listed on this fork's
-[Releases page](https://github.com/TheRWX/Kuroba-Experimental/releases).
+[Releases page](https://github.com/TheRWX/Vibeuroba/releases).
 **Setting this branch to 1.0 does not publish a 1.0 APK.** Check the release title
 and attached assets before installing. The upstream project's APKs and F-Droid
 listing are separate distributions.
@@ -71,8 +71,8 @@ JDK 17, Android SDK 34, and the included Gradle wrapper. Dependencies are fetche
 from Google Maven, Maven Central, and JitPack.
 
 ```sh
-git clone --branch vibeuroba-1.0 https://github.com/TheRWX/Kuroba-Experimental.git
-cd Kuroba-Experimental/Kuroba
+git clone --branch vibeuroba-1.0 https://github.com/TheRWX/Vibeuroba.git
+cd Vibeuroba/Kuroba
 ```
 
 Set your SDK location in an untracked `local.properties` file:
@@ -136,7 +136,7 @@ existing app; they are not verified screenshots of the Vibeuroba 1.0 build.
 
 ## Feedback and contributions
 
-Use this fork's [issue tracker](https://github.com/TheRWX/Kuroba-Experimental/issues)
+Use this fork's [issue tracker](https://github.com/TheRWX/Vibeuroba/issues)
 for Vibeuroba feedback. Include the app version, Android version, affected site,
 and steps to reproduce a problem. Discuss larger features before implementing
 them so they fit the direction of this fork.

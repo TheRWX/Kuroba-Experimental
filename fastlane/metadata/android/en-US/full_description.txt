@@ -10,7 +10,7 @@ Browse boards and threads, follow conversations, post replies, view media, and s
 * Dynamic light and dark themes, content filters, and per-site proxies.
 * Supported third-party thread archives.
 
-Site availability and supported features vary. These capabilities are inherited from the existing codebase; Vibeuroba development continues in TheRWX/Kuroba-Experimental.
+Site availability and supported features vary. These capabilities are inherited from the existing codebase; Vibeuroba development continues in TheRWX/Vibeuroba.
 
 AntiFeatures:
 - NonFreeNet. The app has to connect to image board sites which may be closed source. 

@@ -36,10 +36,10 @@ android {
         // the repo endpoint is also used to calculate the issues endpoint
         // the resources endpoint is for any static resources; currently this is mostly used for various images used internally,
         // but using a remote resource works easier with the application architecture than using a local resource/drawable
-        buildConfigField "String", "RELEASE_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/TheRWX/Kuroba-Experimental/releases/latest\""
+        buildConfigField "String", "RELEASE_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/TheRWX/Vibeuroba/releases/latest\""
         buildConfigField "String", "BETA_UPDATE_API_ENDPOINT", "\"https://api.github.com/repos/TheRWX/Kuroba-Experimental-beta/releases/latest\""
-        buildConfigField "String", "GITHUB_ENDPOINT", "\"https://github.com/TheRWX/Kuroba-Experimental\""
-        buildConfigField "String", "GITHUB_CHANGELOGS_ENDPOINT", "\"https://raw.githubusercontent.com/TheRWX/Kuroba-Experimental/develop/fastlane/metadata/android/en-US/changelogs/\""
+        buildConfigField "String", "GITHUB_ENDPOINT", "\"https://github.com/TheRWX/Vibeuroba\""
+        buildConfigField "String", "GITHUB_CHANGELOGS_ENDPOINT", "\"https://raw.githubusercontent.com/TheRWX/Vibeuroba/vibeuroba-1.0/fastlane/metadata/android/en-US/changelogs/\""
         buildConfigField "String", "GITHUB_REPORTS_ENDPOINT", "\"https://github.com/KurobaExReports/Reports/issues/\""
         // this is for checking who's built what in debug logs
         buildConfigField "String", "RELEASE_SIGNATURE", "\"86242978CF53C34361A8C962D0A57107AEB70E10631AE13EB5B006C0CF673FA9\""
